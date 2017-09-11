@@ -118,6 +118,14 @@ if ($error) {
         <td align="center"><a target="_blank" href="one_to_many_plus.php">One Word <br> Many Puzzle <br> Plus</a></td>
         <td align="center"><a href="userManual.php">User <br> Manual</a></td>
     </tr>
+	<tr>
+        <td align="center">
+            <a href="many_from_a_list.php"><img src="./pic/many_from_a_list.png" class="adminThumbnailSize">
+        </td>
+	</tr>
+    <tr>
+        <td align="center"><a href="many_from_a_list.php">Many from a list</a></td>
+	</tr>
 </table>
 </div>
 
