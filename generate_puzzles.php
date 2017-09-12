@@ -32,6 +32,7 @@ require('utility_functions.php');
     } else { // this is for one to many
         $maxProvided = false;
     }
+
     if (isset($_POST['puzzle'])) {
         $input = preg_replace("/\r\n/", ",", validate_input($_POST['puzzle']));
         // Verify the input value provided meets our requirements
@@ -43,7 +44,7 @@ require('utility_functions.php');
             } else {
                 echo 'window.location.href = "one_to_many.php"</script>';
             }
-        } else if (count(explode(",", trim($input))) > 1) {
+        } else if (count(explode(",", trim($input))) > 1 && !isset($_POST['manyFromAList'])) {
             // If input contains more than one words, go back to previous page
             echo '<script type="text/javascript">alert("You can only enter one word. Please try again"); ';
             if ($maxProvided) {
@@ -51,6 +52,14 @@ require('utility_functions.php');
             } else {
                 echo 'window.location.href = "one_to_many.php"</script>';
             }
+        } else if (count(explode(",", trim($input))) > 1 && isset($_POST['manyFromAList'])) {
+            // Display the puzzles generated for given word
+            $puzzles = explode(",", trim($input));
+            var_dump($puzzles);
+            echo "<br/>";
+            var_dump($wordList);
+            echo "<br/>";
+            
         } else {
             // Display preferences
             echo '<div id="optionContainer" class="optionDiv" style="display: block;" align="center">';
@@ -78,15 +87,7 @@ require('utility_functions.php');
             echo '<input type="radio" style="margin-left:15px;" name="imageSize" onclick="alterImageSize()" /><label>WidthDriven</label>
                     <input style="margin-left:5px;" size="2px" type="text" name="widthDriven" id="widthDriven"/>';
             echo '</div>';
-
-//            echo '<div id="rowSizePreference">';
-//            echo '<lable><b style="font-size: 20px;">Column Preference: </b></lable>';
-//            echo '<label>Number of words per row: </label><input style="margin-left:5px;" type="number" name="rowSize" id="rowSize"min="3" max = "10" value="4" onchange="changeTableRow()"/>
-//                  <label> (Range is from 3 to 10)</label>';
-//            echo '</div>';
             echo '</div>';
-
-            //echo '<h3 style="color:green;"><input type="checkbox" name="answer" onclick="toggleAnswer()">Show Answer</h3>';
 
             // Display the puzzles generated for given word
             $puzzles = explode(",", trim($input));

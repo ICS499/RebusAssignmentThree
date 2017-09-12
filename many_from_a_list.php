@@ -26,17 +26,14 @@ require('session_validation.php');
 <br>
 <div>
     <form method="post" action="generate_puzzles.php">
-        <!--<div class="container">-->
-            <!--<div class="inputDiv" style="background-color: #7FFFFF; height:400px">-->
-            <div class="inputDiv" style="background-color: #7FFFFF;">
-                <textarea class="form-control" rows="10" id="input" name="puzzle"></textarea>
-				<!--<input type="textarea" name="puzzle" id="name-textbox" onclick="this.placeholder = ''"/>-->
-            </div>
-            <br>
-            <div style="text-align:center">
-                <input class="main-buttons" type="submit" value="Show me.."/>
-            </div>
-        <!--</div>-->
+        <input class="hidden" name="manyFromAList" value="true" />
+        <div class="inputDiv" style="background-color: #7FFFFF;">
+            <textarea name="puzzle" rows="10" id="name-textbox" onclick="this.placeholder = ''" ></textarea>
+        </div>
+        <br>
+        <div style="text-align:center">
+            <input class="main-buttons" type="submit" value="Show me.."/>
+        </div>
     </form>
 </div>
 </body>
