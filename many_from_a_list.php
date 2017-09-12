@@ -25,14 +25,18 @@ require('session_validation.php');
 </div>
 <br>
 <div>
-    <form method="post" action="generate_puzzles.php">
-        <input class="hidden" name="manyFromAList" value="true" />
+    <form method="post" action="generate_many_from_a_list.php">
+        <div class="container">
+        <input class="hidden" name="manyFromAList" value="true"/>
         <div class="inputDiv" style="background-color: #7FFFFF;">
-            <textarea name="puzzle" rows="10" id="name-textbox" onclick="this.placeholder = ''" ></textarea>
+            <textarea name="puzzle" id="name-textbox" cols="40" rows="100"
+                      placeholder="Enter a list of words to generate multiple puzzles"
+                      onclick="this.placeholder = ''"></textarea>
         </div>
         <br>
         <div style="text-align:center">
             <input class="main-buttons" type="submit" value="Show me.."/>
+        </div>
         </div>
     </form>
 </div>

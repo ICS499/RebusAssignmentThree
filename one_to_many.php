@@ -27,10 +27,14 @@ require('session_validation.php');
 <div>
     <form method="post" action="generate_puzzles.php">
         <div class="container">
+
+
             <div class="inputDiv"><input type="textbox" name="puzzle" id="name-textbox"
                                          placeholder="Enter a word to generate multiple puzzles"
                                          onclick="this.placeholder = ''"/>
             </div>
+
+
             <br>
             <div style="text-align:center">
                 <input class="main-buttons" type="submit" value="Show me.."/>
