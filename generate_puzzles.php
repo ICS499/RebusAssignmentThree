@@ -52,118 +52,147 @@ require('utility_functions.php');
             } else {
                 echo 'window.location.href = "one_to_many.php"</script>';
             }
-        } else if (count(explode(",", trim($input))) > 1 && isset($_POST['manyFromAList'])) {
-            // Display the puzzles generated for given word
-            $puzzles = explode(",", trim($input));
-            var_dump($puzzles);
-            echo "<br/>";
-            var_dump($wordList);
-            echo "<br/>";
-            
         } else {
-            // Display preferences
-            echo '<div id="optionContainer" class="optionDiv" style="display: block;" align="center">';
-            echo '<div id="displayPreferences">';
-            echo '<lable><b style="font-size: 20px;">Image Display Preference: </b></lable>';
-            echo '<input type="radio" name="showImage" value="Show Images" checked onclick="toggleImage()" /><label>Show Images</label>';
-            echo '<input type="radio" style="margin-left:15px;" name="showImage" value="Mask Images" onclick="toggleImage()" /><label>Mask Images</label>';
-            echo '<input type="radio" style="margin-left:15px;" name="showImage" value="Show Numbers Only" onclick="toggleImage()" /><label>Show Numbers Only</label>';
-            echo '<input type="radio" style="margin-left:15px;" name="showImage" value="Mask Letters Only" onclick="toggleImage()" /><label>Show Letters Only</label>';
-            echo '</div>';
-
-            echo '<div id="answerPreferences">';
-            echo '<lable><b style="font-size: 20px;">Answer Display Preference: </b></lable>';
-            echo '<input type="radio" name="showAnswers" value="Do Not Show Answers" checked onclick="toggleAnswer()" /><label>Do Not Show Answers</label>';
-            echo '<input type="radio" style="margin-left:15px;" name="showAnswers" value="Show Answers Below the Image" onclick="toggleAnswer()" /><label>Show Answers Below the Image</label>';
-            echo '<input type="radio" style="margin-left:15px;" name="showAnswers" value="Show Answers At the end of the page" onclick="toggleAnswer()" /><label>Show Answers At the end of the page</label>';
-            echo '</div>';
-
-            echo '<div id="imagePreferences">';
-            echo '<lable><b style="font-size: 20px;">Image Size Preference: </b></lable>';
-            echo '<input type="radio" name="imageSize" onclick="alterImageSize()" /><label>Default</label>
-                    <input style="margin-left:5px;" size="2px" type="text" name="default" id="default"/>';
-            echo '<input type="radio" style="margin-left:15px;" name="imageSize" onclick="alterImageSize()" /><label>Height Driven</label>
-                    <input style="margin-left:5px;" size="2px" type="text" name="heightDriven" id="heightDriven"/>';
-            echo '<input type="radio" style="margin-left:15px;" name="imageSize" onclick="alterImageSize()" /><label>WidthDriven</label>
-                    <input style="margin-left:5px;" size="2px" type="text" name="widthDriven" id="widthDriven"/>';
-            echo '</div>';
-            echo '</div>';
-
-            // Display the puzzles generated for given word
-            $puzzles = explode(",", trim($input));
+            // Get the words. 
+            // Ensure none are whitespace or null.
+            // Ensure list not longer than 100.
+            $puzzles = array();
+            $exploded = explode(",", trim($input));
+            foreach ($exploded as $word) {
+                if (!ctype_space($word) && $word != '')
+                    array_push($puzzles, $word);
+                if (count($puzzles) == 100)
+                    break;
+            }
             $wordList = array(); // we will use this to keep track of words being used so no repetition occurs
             $allAnswers = "";
-            foreach ($puzzles as $puzzleWord) {
-                echo '<div class="container"><h1 style="color:red;">Find the words for "' . $puzzleWord . '"</h1>';
-                $puzzleChars = getWordChars($puzzleWord);
-                $generate = true;
-                $counter = 0;
-                //$allAnswers .= "<h1>Answers for ".$puzzleWord.": </h1>";
-                $allAnswers .="<h2 style='color: green;'> Answer for Puzzle: \"".$puzzleWord."\"</h2>";
-                while ($generate) {
-                    $word_array = array();
-                    $image_array = array();
-                    for ($i = 0; $i < count($puzzleChars); $i++) {
-                        $word = getRandomWord($puzzleChars[$i], $wordList);
-                        if (!empty($word)) {
-                            array_push($word_array, $word['word']);
-                            array_push($wordList, $word['word']);
-                            array_push($image_array, $word['image']);
-                        } else {
-                            array_push($word_array, $puzzleChars[$i]);
-                            array_push($image_array, "");
-                            if (!$maxProvided) {
+            if (!isset($_POST['manyFromAList'])) {
+                // Display preferences
+                echo '<div id="optionContainer" class="optionDiv" style="display: block;" align="center">';
+                echo '<div id="displayPreferences">';
+                echo '<lable><b style="font-size: 20px;">Image Display Preference: </b></lable>';
+                echo '<input type="radio" name="showImage" value="Show Images" checked onclick="toggleImage()" /><label>Show Images</label>';
+                echo '<input type="radio" style="margin-left:15px;" name="showImage" value="Mask Images" onclick="toggleImage()" /><label>Mask Images</label>';
+                echo '<input type="radio" style="margin-left:15px;" name="showImage" value="Show Numbers Only" onclick="toggleImage()" /><label>Show Numbers Only</label>';
+                echo '<input type="radio" style="margin-left:15px;" name="showImage" value="Mask Letters Only" onclick="toggleImage()" /><label>Show Letters Only</label>';
+                echo '</div>';
+
+                echo '<div id="answerPreferences">';
+                echo '<lable><b style="font-size: 20px;">Answer Display Preference: </b></lable>';
+                echo '<input type="radio" name="showAnswers" value="Do Not Show Answers" checked onclick="toggleAnswer()" /><label>Do Not Show Answers</label>';
+                echo '<input type="radio" style="margin-left:15px;" name="showAnswers" value="Show Answers Below the Image" onclick="toggleAnswer()" /><label>Show Answers Below the Image</label>';
+                echo '<input type="radio" style="margin-left:15px;" name="showAnswers" value="Show Answers At the end of the page" onclick="toggleAnswer()" /><label>Show Answers At the end of the page</label>';
+                echo '</div>';
+
+                echo '<div id="imagePreferences">';
+                echo '<lable><b style="font-size: 20px;">Image Size Preference: </b></lable>';
+                echo '<input type="radio" name="imageSize" onclick="alterImageSize()" /><label>Default</label>
+                        <input style="margin-left:5px;" size="2px" type="text" name="default" id="default"/>';
+                echo '<input type="radio" style="margin-left:15px;" name="imageSize" onclick="alterImageSize()" /><label>Height Driven</label>
+                        <input style="margin-left:5px;" size="2px" type="text" name="heightDriven" id="heightDriven"/>';
+                echo '<input type="radio" style="margin-left:15px;" name="imageSize" onclick="alterImageSize()" /><label>WidthDriven</label>
+                        <input style="margin-left:5px;" size="2px" type="text" name="widthDriven" id="widthDriven"/>';
+                echo '</div>';
+                echo '</div>';
+                
+                foreach ($puzzles as $puzzleWord) {
+                    echo '<div class="container"><h1 style="color:red;">Find the words for "' . $puzzleWord . '"</h1>';
+                    $puzzleChars = getWordChars($puzzleWord);
+                    $generate = true;
+                    $counter = 0;
+                    //$allAnswers .= "<h1>Answers for ".$puzzleWord.": </h1>";
+                    $allAnswers .="<h2 style='color: green;'> Answer for Puzzle: \"".$puzzleWord."\"</h2>";
+                    while ($generate) {
+                        $word_array = array();
+                        $image_array = array();
+                        for ($i = 0; $i < count($puzzleChars); $i++) {
+                            $word = getRandomWord($puzzleChars[$i], $wordList);
+                            if (!empty($word)) {
+                                array_push($word_array, $word['word']);
+                                array_push($wordList, $word['word']);
+                                array_push($image_array, $word['image']);
+                            } else {
+                                array_push($word_array, $puzzleChars[$i]);
+                                array_push($image_array, "");
+                                if (!$maxProvided) {
+                                    $generate = false;
+                                    //  break;
+                                }
+                            }
+                        }
+
+                        $counter++;
+                        $allAnswers .="<h2 style='color: green;'>Puzzle #".$counter."</h2>";
+                        echo '<h1>Puzzle #' . $counter . '</h1>';
+                        echo '<table class="table" id="print_table" border="0" style="width: auto">';
+                        for ($i = 0; $i < count($puzzleChars); $i++) {
+                            $word_chars = getWordChars($word_array[$i]);
+                            $pos = array_search($puzzleChars[$i], $word_chars) + 1;
+                            $len = count($word_chars);
+                            $image = getImageIfExists($image_array[$i]);
+                            $word = $word_array[$i];
+                            if ($i === 0) {
+                                echo '<tr>';
+                            } else if ($i % 4 === 0) {
+                                echo '</tr border="0"><tr>';
+                            }
+                            if (empty($image)) {
+                                echo "<td align='center' style='border-top: none; vertical-align: bottom;'>
+                                  <h1 class='char'> $puzzleChars[$i] </h1>
+                                  <figcaption class=\"print-figCaption\">" . $pos . '/' . $len . "</figcaption>
+                                <div align='center' class='answerDiv'><h3>" . $word . "</h3></div></td>";
+                            } else {
+                                echo "<td align='center' style='border-top: none; vertical-align: bottom;'>
+                                  <h1 class='letters' style='display:none;'> $puzzleChars[$i] </h1>
+                                  <div class='maskImage'><img class='print-img' src=\"$image\" alt =\"$image\"></div>
+                                  <figcaption class=\"print-figCaption\">" . $pos . '/' . $len . "</figcaption>
+                                <div align='center' class='answerDiv'><h3>" . $word . "</h3></div></td>";
+                            }
+                            $allAnswers .= "<h5>".$word."</h5>";
+                        }
+                        echo '</tr>';
+                        echo '</table>';
+                        //  }
+                        if ($maxProvided) {
+                            // only display max count number of puzzles
+                            if ($counter == $max) {
                                 $generate = false;
-                                //  break;
                             }
                         }
                     }
-
-                    //if ($generate) {
-                    $counter++;
-                    $allAnswers .="<h2 style='color: green;'>Puzzle #".$counter."</h2>";
-                    echo '<h1>Puzzle #' . $counter . '</h1>';
-                    echo '<table class="table" id="print_table" border="0" style="width: auto">';
-                    for ($i = 0; $i < count($puzzleChars); $i++) {
-                        $word_chars = getWordChars($word_array[$i]);
-                        $pos = array_search($puzzleChars[$i], $word_chars) + 1;
-                        $len = count($word_chars);
-                        $image = getImageIfExists($image_array[$i]);
-                        $word = $word_array[$i];
-                        if ($i === 0) {
-                            echo '<tr>';
-                        } else if ($i % 4 === 0) {
-                            echo '</tr border="0"><tr>';
-                        }
-                        if (empty($image)) {
-                            echo "<td align='center' style='border-top: none; vertical-align: bottom;'>
-                              <h1 class='char'> $puzzleChars[$i] </h1>
-                              <figcaption class=\"print-figCaption\">" . $pos . '/' . $len . "</figcaption>
-                            <div align='center' class='answerDiv'><h3>" . $word . "</h3></div></td>";
-                        } else {
-                            echo "<td align='center' style='border-top: none; vertical-align: bottom;'>
-                              <h1 class='letters' style='display:none;'> $puzzleChars[$i] </h1>
-                              <div class='maskImage'><img class='print-img' src=\"$image\" alt =\"$image\"></div>
-                              <figcaption class=\"print-figCaption\">" . $pos . '/' . $len . "</figcaption>
-                            <div align='center' class='answerDiv'><h3>" . $word . "</h3></div></td>";
-                        }
-                        $allAnswers .= "<h5>".$word."</h5>";
-                    }
-                    echo '</tr>';
-                    echo '</table>';
-                    //  }
-                    if ($maxProvided) {
-                        // only display max count number of puzzles
-                        if ($counter == $max) {
-                            $generate = false;
-                        }
+                }
+                echo '<div name="allAnswers" style="display:none"><h3>'.$allAnswers.'</h3></div>';
+            } else {
+                echo "<h1>Input Word List:</h1>";
+                echo "<h2>";
+                for ($i = 0; $i < count($puzzles); $i++) {
+                    if ($i == count($puzzles) - 1){
+                        echo $puzzles[$i];
+                    } else {
+                        echo $puzzles[$i].', ';
                     }
                 }
-
+                echo "<br/><br/>";
+                // Don't match the same word twice, track previously matched
+                $previouslyMatched = array();
+                for ($i = 0; $i < count($puzzles); $i++) {
+                    echo ($i+1).'.'.$puzzles[$i]." = ";
+                    $chars = getWordChars($puzzles[i]);
+                    for ($j = 0; $j < count($puzzles); $j++) {
+                        // Skip condition 1: They are the same index/value.
+                        if (count[$j] == count[i]){
+                            continue;
+                        }
+                        // Skip condition 2: They are the same word.
+                        if (strCmp(count[$j], count[$i]) == 0) {
+                            continue;
+                        }
+                        $compareChars = getWordChars($count[$j]);
+                    }
+                    echo "<br/>";
+                }
+                echo "</h2>";
             }
-          //  $allAnswers = preg_replace("</td>","",$allAnswers);
-           // echo $allAnswers;
-            echo '<div name="allAnswers" style="display:none"><h3>'.$allAnswers.'</h3></div>';
         }
     }
     ?>
