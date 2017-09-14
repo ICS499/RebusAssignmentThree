@@ -165,7 +165,7 @@ if (isset($_POST['puzzle'])) {
         } else {
             echo "<h1>Input Word List:</h1>";
             echo "<h3>";
-            for ($i = 0; $i < count($puzzles); $i++) {
+            for ($i = 0; $i < count($puzzles) && $i < 100; $i++) {
                 if ($i === count($puzzles) - 1){
                     echo $puzzles[$i];
                 } else {
@@ -181,6 +181,12 @@ if (isset($_POST['puzzle'])) {
             for ($currentCursor = 0; $currentCursor < count($puzzles); $currentCursor++) {
                 // Label the row for each word
                 echo ($currentCursor+1) . '. &nbsp;&nbsp;' . $puzzles[$currentCursor] . "&nbsp; = &nbsp;";
+                // Stop condition 1: only one word
+                if (count($puzzles) === 1) {
+                    echo "?? (not enough words to generate)";
+                    break;
+                }
+                // Stop condition 2:
 
                 // Array for current word characters
                 $chars = getWordChars($puzzles[$currentCursor]);
@@ -189,9 +195,15 @@ if (isset($_POST['puzzle'])) {
                 $unfinished = count($chars);
                 unset($previousMatches);
                 $previousMatches = array();
-
+                $matched = true;
                 // For each character of the current word
                 for ($currentCharCursor = 0; $currentCharCursor < count($chars); $currentCharCursor++) {
+                    // Stop condition 1: last letter was not matched
+                    if(!$matched) {
+                        echo "?? (not enough words to generate)";
+                        break ;
+                    } 
+                    $matched = false;
                     // Compare to all other words
                     for ($comparisonCursor = 0; $comparisonCursor < count($puzzles); $comparisonCursor++) {
                         // Skip word condition 1: Current word and comparison word are the same index.
@@ -201,7 +213,7 @@ if (isset($_POST['puzzle'])) {
                         // Skip word condition 3: Comparison word was previously matched.
                         $skip = false;
                         foreach ($previousMatches as $pmWord) {
-                            if (strcmp($puzzles[$comparisonCursor], $pmWord) === 0) { 
+                            if (strcmp($puzzles[$comparisonCursor], $pmWord) === 0) {
                                 $skip = true;
                                 break;
                             } 
@@ -225,6 +237,7 @@ if (isset($_POST['puzzle'])) {
                                 }
 
                                 // If the match was found, mark the comparison word as a match
+                                $matched = true;
                                 $previousMatches[] = $puzzles[$comparisonCursor];
                                 $unfinished--;
                                 break 2;
