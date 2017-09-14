@@ -164,34 +164,73 @@ if (isset($_POST['puzzle'])) {
             echo '<div name="allAnswers" style="display:none"><h3>'.$allAnswers.'</h3></div>';
         } else {
             echo "<h1>Input Word List:</h1>";
-            echo "<h2>";
-            for ($i = 0; $i < count($puzzles); $i++) {
-                if ($i == count($puzzles) - 1){
-                    echo $puzzles[$i];
-                } else {
-                    echo $puzzles[$i].', ';
-                }
-            }
-            echo "<br/><br/>";
-            // Don't match the same word twice, track previously matched
-            $previouslyMatched = array();
-            for ($i = 0; $i < count($puzzles); $i++) {
-                echo ($i+1).'.'.$puzzles[$i]." = ";
-                $chars = getWordChars($puzzles[i]);
-                for ($j = 0; $j < count($puzzles); $j++) {
-                    // Skip condition 1: They are the same index/value.
-                    if (count[$j] == count[i]){
-                        continue;
+                echo "<h3>";
+                for ($i = 0; $i < count($puzzles); $i++) {
+                    if ($i === count($puzzles) - 1){
+                        echo $puzzles[$i];
+                    } else {
+                        echo $puzzles[$i].', ';
                     }
-                    // Skip condition 2: They are the same word.
-                    if (strCmp(count[$j], count[$i]) == 0) {
-                        continue;
-                    }
-                    $compareChars = getWordChars($count[$j]);
                 }
-                echo "<br/>";
-            }
-            echo "</h2>";
+                echo "<br/><br/>";
+                
+                // For each char of each word, check each char of each word
+                // Try to complete the puzzle for each word
+                for ($currentCursor = 0; $currentCursor < count($puzzles); $currentCursor++) {
+                    // Label the row for each word
+                    echo ($currentCursor+1).'.'.$puzzles[$currentCursor]." = ";
+                    
+                    // Array for current word characters
+                    $chars = getWordChars($puzzles[$currentCursor]);
+                    
+                    // Tracking variables / reset variables
+                    $unfinished = count($chars);
+                    unset($previousMatches);
+                    $previousMatches = array();
+                    
+                    // For each character of the current word
+                    for ($currentCharCursor = 0; $currentCharCursor < count($chars); $currentCharCursor++) {
+                        // Compare to all other words
+                        for ($comparisonCursor = 0; $comparisonCursor < count($puzzles); $comparisonCursor++) {
+                            // Skip word condition 1: Current word and comparison word are the same index.
+                            if ($comparisonCursor == $currentCursor) { continue; }
+                            // Skip word condition 2: Current word and comparison word are equal.
+                            if (strCmp($puzzles[$comparisonCursor], $puzzles[$currentCursor]) == 0) { continue; }
+                            // Skip word condition 3: Comparison word was previously matched.
+                            if (!empty($previousMatches)){
+                                foreach ($previousMatches as $pmWord)
+                                    if (strcmp($puzzles[$comparisonCursor], $pmWord) === 0) { break 2; }
+                            }
+
+                            // Array for comparison word characters
+                            $comparisonChars = getWordChars($puzzles[$comparisonCursor]);
+                            
+                            // For each char in the comparison word, try to match with current word.
+                            for ($comparisonCharCursor = 0; $comparisonCharCursor < count($comparisonChars); $comparisonCharCursor++){
+                                if ($comparisonChars[$comparisonCharCursor] === $chars[$currentCharCursor]){
+                                    if ($currentCharCursor == count($chars) - 1){
+                                        echo ($comparisonCharCursor+1)."\\".count($comparisonChars)."(".$puzzles[$comparisonCursor].")";
+                                    } else {
+                                        echo ($comparisonCharCursor+1)."\\".count($comparisonChars)."(".$puzzles[$comparisonCursor].") + ";
+                                    }
+                                    
+                                    // If the match was found, mark the comparison word as a match
+                                    array_push($previousMatches, $puzzles[$comparisonCursor]);
+                                    $unfinished--;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // Check for unfinished puzzle
+                        if ($unfinished > 0 && $comparisonCursor === count($puzzles) - 1){
+                            echo "?? (not enough words to generate)";
+                            break;
+                        }
+                    }
+                    echo "<br/>";
+                }
+                echo "</h3>";
         }
     }
 }
