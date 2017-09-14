@@ -197,8 +197,16 @@ if (isset($_POST['puzzle'])) {
                         // Skip word condition 2: Current word and comparison word are equal.
                         if (strCmp($puzzles[$comparisonCursor], $puzzles[$currentCursor]) === 0) { continue; }
                         // Skip word condition 3: Comparison word was previously matched.
-                        foreach ($previousMatches as $pmWord)
-                            if (strcmp($puzzles[$comparisonCursor], $pmWord) === 0) { break 1; }
+                        $skip = false;
+                        foreach ($previousMatches as $pmWord) {
+                            if (strcmp($puzzles[$comparisonCursor], $pmWord) === 0) { 
+                                $skip = true;
+                                break;
+                            } 
+                        }
+                        if ($skip) {
+                            continue;
+                        }
 
                         // Array for comparison word characters
                         $comparisonChars = getWordChars($puzzles[$comparisonCursor]);
@@ -219,10 +227,12 @@ if (isset($_POST['puzzle'])) {
                                 $unfinished--;
                                 break 2;
                             }
-                            if ($comparisonCursor === count($puzzles) - 1 && $unfinished > 0){
-                                echo "?? (not enough words to generate)";
-                                break 3;
-                            }
+                        }
+                        
+                        // We're done with the word if this character can't be matched
+                        if ($comparisonCursor === count($puzzles) - 1 && $unfinished > 0){
+                            echo "?? (not enough words to generate)";
+                            break 2;
                         }
                     }
                 }
@@ -412,7 +422,7 @@ if (isset($_POST['puzzle'])) {
 
 
 <br>
-    <div class="container"><h1 style="color:black;">Puzzles </h1></div>
+    <!--<div class="container"><h1 style="color:black;">Puzzles </h1></div>-->
 
 
 
