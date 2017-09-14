@@ -174,11 +174,13 @@ if (isset($_POST['puzzle'])) {
             }
             echo "<br/><br/>";
 
+            echo "<h1>Puzzles</h1>";
+            echo "<h3>";
             // For each char of each word, check each char of each word
             // Try to complete the puzzle for each word
             for ($currentCursor = 0; $currentCursor < count($puzzles); $currentCursor++) {
                 // Label the row for each word
-                echo ($currentCursor+1).'.'.$puzzles[$currentCursor]." = ";
+                echo ($currentCursor+1) . '. &nbsp;&nbsp;' . $puzzles[$currentCursor] . "&nbsp; = &nbsp;";
 
                 // Array for current word characters
                 $chars = getWordChars($puzzles[$currentCursor]);
@@ -217,9 +219,9 @@ if (isset($_POST['puzzle'])) {
                             if ($comparisonChars[$comparisonCharCursor] === $chars[$currentCharCursor]){
                                 //echo "CurrentChar: ".$currentCharCursor." - ";
                                 if ($currentCharCursor == count($chars) - 1){
-                                    echo ($comparisonCharCursor+1)."\\".count($comparisonChars)."(".$puzzles[$comparisonCursor].")";
+                                    echo ($comparisonCharCursor+1)."\\".count($comparisonChars)." (".$puzzles[$comparisonCursor].")". "  ";
                                 } else {
-                                    echo ($comparisonCharCursor+1)."\\".count($comparisonChars)."(".$puzzles[$comparisonCursor].") + ";
+                                    echo ($comparisonCharCursor+1)."\\".count($comparisonChars)." (".$puzzles[$comparisonCursor].")". " &nbsp;+&nbsp; " ;
                                 }
 
                                 // If the match was found, mark the comparison word as a match
